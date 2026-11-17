@@ -1,5 +1,5 @@
 """
-🔮 ANIZONE — ANIME TELEGRAM BOT (bitta fayl)
+🔮 DRAMA UZ — DRAMA TELEGRAM BOT (bitta fayl)
 =============================================
 aiogram 3.31 · SQLAlchemy async · PostgreSQL (yoki SQLite) · Render (webhook)
 
@@ -15,9 +15,9 @@ Muhit o'zgaruvchilari (Render → Environment yoki lokal .env fayl):
     BOT_TOKEN            @BotFather tokeni                      (MAJBURIY)
     OWNER_ID             8318241400                              (MAJBURIY)
     DATABASE_URL         Render PostgreSQL "Internal Database URL" (bo'sh bo'lsa SQLite)
-    DEFAULT_SUB_CHANNEL  @AniZone_UzBot  (birinchi majburiy kanal; bot u yerda ADMIN bo'lishi shart)
+    DEFAULT_SUB_CHANNEL  @kanal_username  (birinchi majburiy kanal; bot u yerda ADMIN bo'lishi shart)
     ADMIN_IDS            ixtiyoriy, vergul bilan
-    BOT_NAME / BOT_USERNAME / TIMEZONE   ixtiyoriy (AniZone / AniZone_bot / Asia/Tashkent)
+    BOT_NAME / BOT_USERNAME / TIMEZONE   ixtiyoriy (DRAMA UZ / DRAMACH1_1_bot / Asia/Tashkent)
     BASE_URL             bo'sh qoldiring: Render RENDER_EXTERNAL_URL ni o'zi beradi -> webhook rejimi
     PYTHON_VERSION       3.14.0  (faqat Render'da)
 
@@ -64,7 +64,7 @@ from typing import Any, Awaitable, Callable
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 from zoneinfo import ZoneInfo
 
-logger = logging.getLogger("anizone")
+logger = logging.getLogger("dramauz")
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -79,36 +79,36 @@ TEXTS: dict[str, dict[str, str]] = {
         "lang_set": "✅ Til o'zgartirildi",
         "welcome": (
             "🔮 <b>{bot}</b> botiga xush kelibsiz, <b>{name}</b>! 💜\n\n"
-            "Bu yerda eng sara animelarni o'zbek tilida tomosha qilishingiz mumkin 🎬\n\n"
+            "Bu yerda eng sara dramalarni o'zbek tilida tomosha qilishingiz mumkin 🎬\n\n"
             "Pastdagi menyudan kerakli bo'limni tanlang 👇"
         ),
-        "menu_hint": "Bo'limni tanlang yoki anime nomini yozing",
+        "menu_hint": "Bo'limni tanlang yoki drama nomini yozing",
         "sub_required": (
             "🔒 <b>Botdan foydalanish uchun quyidagi kanallarga obuna bo'ling:</b>\n\n"
             "Obuna bo'lgach, «✅ Tekshirish» tugmasini bosing 👇"
         ),
         "sub_check_btn": "✅ Tekshirish",
         "sub_not_yet": "❌ Siz hali barcha kanallarga obuna bo'lmadingiz!",
-        "btn_animes": "🎬 Animelar",
+        "btn_dramas": "🎬 Dramalar",
         "btn_search": "🔍 Qidiruv",
         "btn_genres": "🎭 Janrlar",
         "btn_fav": "⭐ Sevimlilar",
         "btn_vip": "💎 VIP",
         "btn_lang": "🌐 Til",
-        "list_title": "🎬 <b>Barcha animelar</b> — {total} ta\n\nKerakli animeni tanlang 👇",
-        "list_empty": "😔 Hozircha animelar yo'q. Tez orada qo'shiladi!",
+        "list_title": "🎬 <b>Barcha dramalar</b> — {total} ta\n\nKerakli dramani tanlang 👇",
+        "list_empty": "😔 Hozircha dramalar yo'q. Tez orada qo'shiladi!",
         "search_prompt": (
-            "🔍 Anime <b>nomi</b>, <b>kodi</b> yoki <b>janrini</b> yuboring:\n\n"
-            "Masalan: <code>Naruto</code>, <code>12</code> yoki <code>Action</code>"
+            "🔍 Drama <b>nomi</b>, <b>kodi</b> yoki <b>janrini</b> yuboring:\n\n"
+            "Masalan: <code>Goblin</code>, <code>12</code> yoki <code>Action</code>"
         ),
         "search_none": "😕 Hech narsa topilmadi. Boshqa nom yoki kod bilan urinib ko'ring.",
         "search_found": "🔎 <b>Topilgan natijalar:</b>",
         "genres_title": "🎭 <b>Janrni tanlang:</b>",
         "genres_empty": "😔 Janrlar hali qo'shilmagan.",
-        "genre_list_title": "🎭 <b>{genre}</b> — {total} ta anime",
-        "genre_list_empty": "😔 Bu janrda hozircha anime yo'q.",
-        "fav_title": "⭐ <b>Sevimli animelaringiz</b> — {total} ta",
-        "fav_empty": "⭐ Sevimlilar ro'yxati hozircha bo'sh.\nAnime sahifasidagi ⭐ tugmasi orqali qo'shing.",
+        "genre_list_title": "🎭 <b>{genre}</b> — {total} ta drama",
+        "genre_list_empty": "😔 Bu janrda hozircha drama yo'q.",
+        "fav_title": "⭐ <b>Sevimli dramalaringiz</b> — {total} ta",
+        "fav_empty": "⭐ Sevimlilar ro'yxati hozircha bo'sh.\nDrama sahifasidagi ⭐ tugmasi orqali qo'shing.",
         "fav_add": "⭐ Sevimlilarga qo'shish",
         "fav_remove": "💔 Sevimlilardan olib tashlash",
         "fav_added": "⭐ Sevimlilarga qo'shildi!",
@@ -129,14 +129,14 @@ TEXTS: dict[str, dict[str, str]] = {
         "ep_missing": "❌ Qism topilmadi.",
         "ep_send_failed": "⚠️ Qismni yuborib bo'lmadi. Keyinroq urinib ko'ring.",
         "ep_all": "📚 Qismlar",
-        "anime_missing": "❌ Anime topilmadi yoki o'chirilgan.",
-        "vip_only_alert": "💎 Bu anime faqat VIP foydalanuvchilar uchun!",
-        "vip_only_text": "💎 <b>Bu anime faqat VIP uchun</b>\n\nVIP olish uchun pastdagi tugmani bosing 👇",
+        "drama_missing": "❌ Drama topilmadi yoki o'chirilgan.",
+        "vip_only_alert": "💎 Bu drama faqat VIP foydalanuvchilar uchun!",
+        "vip_only_text": "💎 <b>Bu drama faqat VIP uchun</b>\n\nVIP olish uchun pastdagi tugmani bosing 👇",
         "btn_buy_vip": "💎 VIP olish",
         "vip_info": (
             "💎 <b>VIP imkoniyatlari</b>\n\n"
-            "✨ VIP belgisi bor animelarni ko'rish\n"
-            "🚀 Yangi animelarga birinchi bo'lib kirish\n\n"
+            "✨ VIP belgisi bor dramalarni ko'rish\n"
+            "🚀 Yangi dramalarga birinchi bo'lib kirish\n\n"
             "{status}\n\n"
             "💰 <b>Tariflar:</b>\n{plans}\n\n"
             "Tarifni tanlang 👇"
@@ -168,36 +168,36 @@ TEXTS: dict[str, dict[str, str]] = {
         "lang_set": "✅ Язык изменён",
         "welcome": (
             "🔮 Добро пожаловать в <b>{bot}</b>, <b>{name}</b>! 💜\n\n"
-            "Здесь вы можете смотреть лучшие аниме в озвучке 🎬\n\n"
+            "Здесь вы можете смотреть лучшие дорамы в озвучке 🎬\n\n"
             "Выберите нужный раздел в меню ниже 👇"
         ),
-        "menu_hint": "Выберите раздел или напишите название аниме",
+        "menu_hint": "Выберите раздел или напишите название дорамы",
         "sub_required": (
             "🔒 <b>Чтобы пользоваться ботом, подпишитесь на каналы:</b>\n\n"
             "После подписки нажмите «✅ Проверить» 👇"
         ),
         "sub_check_btn": "✅ Проверить",
         "sub_not_yet": "❌ Вы ещё не подписались на все каналы!",
-        "btn_animes": "🎬 Аниме",
+        "btn_dramas": "🎬 Дорамы",
         "btn_search": "🔍 Поиск",
         "btn_genres": "🎭 Жанры",
         "btn_fav": "⭐ Избранное",
         "btn_vip": "💎 VIP",
         "btn_lang": "🌐 Язык",
-        "list_title": "🎬 <b>Все аниме</b> — {total} шт.\n\nВыберите аниме 👇",
-        "list_empty": "😔 Пока аниме нет. Скоро добавим!",
+        "list_title": "🎬 <b>Все дорамы</b> — {total} шт.\n\nВыберите дораму 👇",
+        "list_empty": "😔 Пока дорам нет. Скоро добавим!",
         "search_prompt": (
-            "🔍 Отправьте <b>название</b>, <b>код</b> или <b>жанр</b> аниме:\n\n"
-            "Например: <code>Naruto</code>, <code>12</code> или <code>Action</code>"
+            "🔍 Отправьте <b>название</b>, <b>код</b> или <b>жанр</b> дорамы:\n\n"
+            "Например: <code>Goblin</code>, <code>12</code> или <code>Action</code>"
         ),
         "search_none": "😕 Ничего не найдено. Попробуйте другое название или код.",
         "search_found": "🔎 <b>Результаты поиска:</b>",
         "genres_title": "🎭 <b>Выберите жанр:</b>",
         "genres_empty": "😔 Жанры пока не добавлены.",
         "genre_list_title": "🎭 <b>{genre}</b> — {total} шт.",
-        "genre_list_empty": "😔 В этом жанре пока нет аниме.",
+        "genre_list_empty": "😔 В этом жанре пока нет дорам.",
         "fav_title": "⭐ <b>Ваше избранное</b> — {total} шт.",
-        "fav_empty": "⭐ Список избранного пока пуст.\nДобавляйте кнопкой ⭐ на странице аниме.",
+        "fav_empty": "⭐ Список избранного пока пуст.\nДобавляйте кнопкой ⭐ на странице дорамы.",
         "fav_add": "⭐ В избранное",
         "fav_remove": "💔 Убрать из избранного",
         "fav_added": "⭐ Добавлено в избранное!",
@@ -218,14 +218,14 @@ TEXTS: dict[str, dict[str, str]] = {
         "ep_missing": "❌ Серия не найдена.",
         "ep_send_failed": "⚠️ Не удалось отправить серию. Попробуйте позже.",
         "ep_all": "📚 Серии",
-        "anime_missing": "❌ Аниме не найдено или удалено.",
-        "vip_only_alert": "💎 Это аниме только для VIP-пользователей!",
-        "vip_only_text": "💎 <b>Это аниме только для VIP</b>\n\nНажмите кнопку ниже, чтобы получить VIP 👇",
+        "drama_missing": "❌ Дорама не найдена или удалена.",
+        "vip_only_alert": "💎 Эта дорама только для VIP-пользователей!",
+        "vip_only_text": "💎 <b>Эта дорама только для VIP</b>\n\nНажмите кнопку ниже, чтобы получить VIP 👇",
         "btn_buy_vip": "💎 Получить VIP",
         "vip_info": (
             "💎 <b>Возможности VIP</b>\n\n"
-            "✨ Доступ к аниме с отметкой VIP\n"
-            "🚀 Первыми получайте новые аниме\n\n"
+            "✨ Доступ к дорамам с отметкой VIP\n"
+            "🚀 Первыми получайте новые дорамы\n\n"
             "{status}\n\n"
             "💰 <b>Тарифы:</b>\n{plans}\n\n"
             "Выберите тариф 👇"
@@ -276,7 +276,7 @@ def variants(key: str) -> set[str]:
 
 
 # Menyu tugmalari matnlari: to'lov chekini kutayotgan holatda ham ishlashi uchun kerak
-MENU_TEXTS = (variants("btn_animes") | variants("btn_search") | variants("btn_genres")
+MENU_TEXTS = (variants("btn_dramas") | variants("btn_search") | variants("btn_genres")
               | variants("btn_fav") | variants("btn_lang"))
 
 _bg_tasks: set[asyncio.Task] = set()
@@ -310,7 +310,7 @@ def normalize_db_url(url: str) -> str:
     """Render/Heroku bergan URL ni SQLAlchemy (asyncpg) formatiga o'giradi."""
     url = (url or "").strip()
     if not url:
-        return "sqlite+aiosqlite:///anime_bot.db"
+        return "sqlite+aiosqlite:///drama_bot.db"
     if url.startswith("postgres://"):
         url = "postgresql://" + url[len("postgres://"):]
     if url.startswith("postgresql://"):
@@ -356,8 +356,8 @@ def get_config() -> Config:
         owner_id=int(owner),
         admin_ids=_int_set(os.getenv("ADMIN_IDS", "")),
         database_url=normalize_db_url(os.getenv("DATABASE_URL", "")),
-        bot_name=os.getenv("BOT_NAME", "AniZone").strip(),
-        bot_username=os.getenv("BOT_USERNAME", "AniZone_bot").strip().lstrip("@"),
+        bot_name=os.getenv("BOT_NAME", "DRAMA UZ").strip(),
+        bot_username=os.getenv("BOT_USERNAME", "DRAMACH1_1_bot").strip().lstrip("@"),
         default_sub_channel=os.getenv("DEFAULT_SUB_CHANNEL", "").strip(),
         base_url=base_url,
         webhook_secret=secret,
@@ -414,19 +414,19 @@ class Genre(Base):
     name: Mapped[str] = mapped_column(String(64), unique=True)
 
 
-class AnimeGenre(Base):
-    __tablename__ = "anime_genres"
+class DramaGenre(Base):
+    __tablename__ = "drama_genres"
 
-    anime_id: Mapped[int] = mapped_column(ForeignKey("animes.id", ondelete="CASCADE"), primary_key=True)
+    drama_id: Mapped[int] = mapped_column(ForeignKey("dramas.id", ondelete="CASCADE"), primary_key=True)
     genre_id: Mapped[int] = mapped_column(
         ForeignKey("genres.id", ondelete="CASCADE"), primary_key=True, index=True
     )
 
 
-class Anime(Base):
-    """id — bu anime kodi (1, 2, 3 ... avtomatik)."""
+class Drama(Base):
+    """id — bu drama kodi (1, 2, 3 ... avtomatik)."""
 
-    __tablename__ = "animes"
+    __tablename__ = "dramas"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     title: Mapped[str] = mapped_column(String(255), index=True)
@@ -439,16 +439,16 @@ class Anime(Base):
     views: Mapped[int] = mapped_column(Integer, default=0)
 
     genres: Mapped[list[Genre]] = relationship(
-        secondary="anime_genres", lazy="selectin", order_by="Genre.name"
+        secondary="drama_genres", lazy="selectin", order_by="Genre.name"
     )
 
 
 class Episode(Base):
     __tablename__ = "episodes"
-    __table_args__ = (UniqueConstraint("anime_id", "number", name="uq_episode_number"),)
+    __table_args__ = (UniqueConstraint("drama_id", "number", name="uq_episode_number"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    anime_id: Mapped[int] = mapped_column(ForeignKey("animes.id", ondelete="CASCADE"), index=True)
+    drama_id: Mapped[int] = mapped_column(ForeignKey("dramas.id", ondelete="CASCADE"), index=True)
     number: Mapped[int] = mapped_column(Integer)
     file_id: Mapped[str] = mapped_column(String(255))
     file_type: Mapped[str] = mapped_column(String(16), default="video")  # video | document
@@ -460,7 +460,7 @@ class Favorite(Base):
     __tablename__ = "favorites"
 
     user_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=False)
-    anime_id: Mapped[int] = mapped_column(ForeignKey("animes.id", ondelete="CASCADE"), primary_key=True)
+    drama_id: Mapped[int] = mapped_column(ForeignKey("dramas.id", ondelete="CASCADE"), primary_key=True)
 
 
 class Channel(Base):
@@ -489,7 +489,7 @@ class ScheduledPost(Base):
     __table_args__ = (Index("ix_sched_due", "done", "run_at"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    anime_id: Mapped[int] = mapped_column(Integer)
+    drama_id: Mapped[int] = mapped_column(Integer)
     chat_id: Mapped[int] = mapped_column(BigInteger)
     channel_title: Mapped[str] = mapped_column(String(255), default="")
     run_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
@@ -731,122 +731,122 @@ class repo:
     @staticmethod
     async def delete_genre(gid: int) -> None:
         async with SessionLocal() as s, s.begin():
-            await s.execute(delete(AnimeGenre).where(AnimeGenre.genre_id == gid))
+            await s.execute(delete(DramaGenre).where(DramaGenre.genre_id == gid))
             await s.execute(delete(Genre).where(Genre.id == gid))
 
 
-    # ───────────────────────────── Anime ─────────────────────────────
+    # ───────────────────────────── Drama ─────────────────────────────
     @staticmethod
-    async def create_anime(*, title: str, description: str, poster: str | None, year: int | None,
+    async def create_drama(*, title: str, description: str, poster: str | None, year: int | None,
                            is_vip: bool, created_by: int, genre_ids: list[int]) -> int:
         async with SessionLocal() as s, s.begin():
-            anime = Anime(title=title, description=description, poster=poster, year=year,
+            drama = Drama(title=title, description=description, poster=poster, year=year,
                           is_vip=is_vip, created_by=created_by)
-            s.add(anime)
+            s.add(drama)
             await s.flush()
             for gid in set(genre_ids):
-                s.add(AnimeGenre(anime_id=anime.id, genre_id=gid))
-            return anime.id
+                s.add(DramaGenre(drama_id=drama.id, genre_id=gid))
+            return drama.id
 
 
     @staticmethod
-    async def get_anime(aid: int) -> Anime | None:
+    async def get_drama(aid: int) -> Drama | None:
         async with SessionLocal() as s:
-            return await s.get(Anime, aid)
+            return await s.get(Drama, aid)
 
 
     @staticmethod
-    async def update_anime(aid: int, **fields) -> None:
+    async def update_drama(aid: int, **fields) -> None:
         async with SessionLocal() as s, s.begin():
-            await s.execute(update(Anime).where(Anime.id == aid).values(**fields))
+            await s.execute(update(Drama).where(Drama.id == aid).values(**fields))
 
 
     @staticmethod
-    async def set_anime_genres(aid: int, genre_ids: list[int]) -> None:
+    async def set_drama_genres(aid: int, genre_ids: list[int]) -> None:
         async with SessionLocal() as s, s.begin():
-            await s.execute(delete(AnimeGenre).where(AnimeGenre.anime_id == aid))
+            await s.execute(delete(DramaGenre).where(DramaGenre.drama_id == aid))
             for gid in set(genre_ids):
-                s.add(AnimeGenre(anime_id=aid, genre_id=gid))
+                s.add(DramaGenre(drama_id=aid, genre_id=gid))
 
 
     @staticmethod
-    async def anime_genre_ids(aid: int) -> set[int]:
+    async def drama_genre_ids(aid: int) -> set[int]:
         async with SessionLocal() as s:
-            rows = await s.scalars(select(AnimeGenre.genre_id).where(AnimeGenre.anime_id == aid))
+            rows = await s.scalars(select(DramaGenre.genre_id).where(DramaGenre.drama_id == aid))
             return set(rows)
 
 
     @staticmethod
-    async def delete_anime(aid: int) -> bool:
-        """Animeni va unga tegishli hamma narsani to'liq o'chiradi."""
+    async def delete_drama(aid: int) -> bool:
+        """Dramani va unga tegishli hamma narsani to'liq o'chiradi."""
         async with SessionLocal() as s, s.begin():
-            await s.execute(delete(Episode).where(Episode.anime_id == aid))
-            await s.execute(delete(Favorite).where(Favorite.anime_id == aid))
-            await s.execute(delete(AnimeGenre).where(AnimeGenre.anime_id == aid))
-            await s.execute(delete(ScheduledPost).where(ScheduledPost.anime_id == aid))
-            res = await s.execute(delete(Anime).where(Anime.id == aid))
+            await s.execute(delete(Episode).where(Episode.drama_id == aid))
+            await s.execute(delete(Favorite).where(Favorite.drama_id == aid))
+            await s.execute(delete(DramaGenre).where(DramaGenre.drama_id == aid))
+            await s.execute(delete(ScheduledPost).where(ScheduledPost.drama_id == aid))
+            res = await s.execute(delete(Drama).where(Drama.id == aid))
             return res.rowcount > 0
 
 
     @staticmethod
-    async def count_anime() -> int:
+    async def count_drama() -> int:
         async with SessionLocal() as s:
-            return await s.scalar(select(func.count(Anime.id))) or 0
+            return await s.scalar(select(func.count(Drama.id))) or 0
 
 
     @staticmethod
-    async def list_anime(offset: int, limit: int) -> list[Anime]:
+    async def list_drama(offset: int, limit: int) -> list[Drama]:
         async with SessionLocal() as s:
-            rows = await s.scalars(select(Anime).order_by(Anime.id.desc()).offset(offset).limit(limit))
+            rows = await s.scalars(select(Drama).order_by(Drama.id.desc()).offset(offset).limit(limit))
             return list(rows)
 
 
 
 
     @staticmethod
-    async def search_anime(q: str, limit: int = 10) -> list[Anime]:
+    async def search_drama(q: str, limit: int = 10) -> list[Drama]:
         """Kod, nom yoki janr bo'yicha qidiradi."""
         q = q.strip()
         if not q:
             return []
         pattern = _like(q)
         conds = [
-            Anime.title.ilike(pattern, escape="\\"),
-            Anime.id.in_(
-                select(AnimeGenre.anime_id)
-                .join(Genre, Genre.id == AnimeGenre.genre_id)
+            Drama.title.ilike(pattern, escape="\\"),
+            Drama.id.in_(
+                select(DramaGenre.drama_id)
+                .join(Genre, Genre.id == DramaGenre.genre_id)
                 .where(Genre.name.ilike(pattern, escape="\\"))
             ),
         ]
         if q.isdigit() and len(q) <= 9:
-            conds.append(Anime.id == int(q))
+            conds.append(Drama.id == int(q))
         async with SessionLocal() as s:
-            rows = await s.scalars(select(Anime).where(or_(*conds)).order_by(Anime.id.desc()).limit(limit))
+            rows = await s.scalars(select(Drama).where(or_(*conds)).order_by(Drama.id.desc()).limit(limit))
             return list(rows)
 
 
     @staticmethod
-    async def anime_by_genre(gid: int, offset: int, limit: int) -> tuple[list[Anime], int]:
+    async def drama_by_genre(gid: int, offset: int, limit: int) -> tuple[list[Drama], int]:
         async with SessionLocal() as s:
-            base = select(AnimeGenre.anime_id).where(AnimeGenre.genre_id == gid)
+            base = select(DramaGenre.drama_id).where(DramaGenre.genre_id == gid)
             total = await s.scalar(select(func.count()).select_from(base.subquery())) or 0
             rows = await s.scalars(
-                select(Anime).where(Anime.id.in_(base)).order_by(Anime.id.desc()).offset(offset).limit(limit)
+                select(Drama).where(Drama.id.in_(base)).order_by(Drama.id.desc()).offset(offset).limit(limit)
             )
             return list(rows), total
 
 
     @staticmethod
-    async def add_anime_view(aid: int) -> None:
+    async def add_drama_view(aid: int) -> None:
         async with SessionLocal() as s, s.begin():
-            await s.execute(update(Anime).where(Anime.id == aid).values(views=Anime.views + 1))
+            await s.execute(update(Drama).where(Drama.id == aid).values(views=Drama.views + 1))
 
 
     # ───────────────────────────── Qismlar ─────────────────────────────
     @staticmethod
     async def last_episode_number(aid: int) -> int:
         async with SessionLocal() as s:
-            return await s.scalar(select(func.max(Episode.number)).where(Episode.anime_id == aid)) or 0
+            return await s.scalar(select(func.max(Episode.number)).where(Episode.drama_id == aid)) or 0
 
 
     @staticmethod
@@ -856,9 +856,9 @@ class repo:
             try:
                 async with SessionLocal() as s, s.begin():
                     last = await s.scalar(
-                        select(func.max(Episode.number)).where(Episode.anime_id == aid)
+                        select(func.max(Episode.number)).where(Episode.drama_id == aid)
                     ) or 0
-                    s.add(Episode(anime_id=aid, number=last + 1, file_id=file_id, file_type=file_type))
+                    s.add(Episode(drama_id=aid, number=last + 1, file_id=file_id, file_type=file_type))
                     return last + 1
             except IntegrityError:
                 continue
@@ -869,7 +869,7 @@ class repo:
     async def list_episode_numbers(aid: int) -> list[int]:
         async with SessionLocal() as s:
             return list(await s.scalars(
-                select(Episode.number).where(Episode.anime_id == aid).order_by(Episode.number)
+                select(Episode.number).where(Episode.drama_id == aid).order_by(Episode.number)
             ))
 
 
@@ -877,7 +877,7 @@ class repo:
     async def get_episode(aid: int, number: int) -> Episode | None:
         async with SessionLocal() as s:
             return await s.scalar(
-                select(Episode).where(Episode.anime_id == aid, Episode.number == number)
+                select(Episode).where(Episode.drama_id == aid, Episode.number == number)
             )
 
 
@@ -885,7 +885,7 @@ class repo:
     async def delete_episode(aid: int, number: int) -> bool:
         async with SessionLocal() as s, s.begin():
             res = await s.execute(
-                delete(Episode).where(Episode.anime_id == aid, Episode.number == number)
+                delete(Episode).where(Episode.drama_id == aid, Episode.number == number)
             )
             return res.rowcount > 0
 
@@ -894,7 +894,7 @@ class repo:
     async def replace_episode(aid: int, number: int, file_id: str, file_type: str) -> None:
         async with SessionLocal() as s, s.begin():
             await s.execute(
-                update(Episode).where(Episode.anime_id == aid, Episode.number == number)
+                update(Episode).where(Episode.drama_id == aid, Episode.number == number)
                 .values(file_id=file_id, file_type=file_type)
             )
 
@@ -903,7 +903,7 @@ class repo:
     async def add_episode_view(aid: int, number: int) -> None:
         async with SessionLocal() as s, s.begin():
             await s.execute(
-                update(Episode).where(Episode.anime_id == aid, Episode.number == number)
+                update(Episode).where(Episode.drama_id == aid, Episode.number == number)
                 .values(views=Episode.views + 1)
             )
 
@@ -917,7 +917,7 @@ class repo:
             if row:
                 await s.delete(row)
                 return False
-            s.add(Favorite(user_id=uid, anime_id=aid))
+            s.add(Favorite(user_id=uid, drama_id=aid))
             return True
 
 
@@ -928,12 +928,12 @@ class repo:
 
 
     @staticmethod
-    async def list_favorites(uid: int, offset: int, limit: int) -> tuple[list[Anime], int]:
+    async def list_favorites(uid: int, offset: int, limit: int) -> tuple[list[Drama], int]:
         async with SessionLocal() as s:
-            base = select(Favorite.anime_id).where(Favorite.user_id == uid)
+            base = select(Favorite.drama_id).where(Favorite.user_id == uid)
             total = await s.scalar(select(func.count()).select_from(base.subquery())) or 0
             rows = await s.scalars(
-                select(Anime).where(Anime.id.in_(base)).order_by(Anime.id.desc()).offset(offset).limit(limit)
+                select(Drama).where(Drama.id.in_(base)).order_by(Drama.id.desc()).offset(offset).limit(limit)
             )
             return list(rows), total
 
@@ -1002,10 +1002,10 @@ class repo:
 
     # ───────────────────────────── Rejalashtirilgan postlar ─────────────────────────────
     @staticmethod
-    async def add_scheduled(anime_id: int, chat_id: int, channel_title: str, run_at: datetime,
+    async def add_scheduled(drama_id: int, chat_id: int, channel_title: str, run_at: datetime,
                             created_by: int) -> int:
         async with SessionLocal() as s, s.begin():
-            item = ScheduledPost(anime_id=anime_id, chat_id=chat_id, channel_title=channel_title,
+            item = ScheduledPost(drama_id=drama_id, chat_id=chat_id, channel_title=channel_title,
                                  run_at=run_at, created_by=created_by)
             s.add(item)
             await s.flush()
@@ -1086,16 +1086,16 @@ class repo:
                 "blocked": await one(select(func.count(User.id)).where(User.is_blocked.is_(True))),
                 "vip": await one(select(func.count(User.id)).where(User.vip_until > now)),
                 "banned": await one(select(func.count(User.id)).where(User.banned_until > now)),
-                "anime": await one(select(func.count(Anime.id))),
+                "drama": await one(select(func.count(Drama.id))),
                 "episodes": await one(select(func.count(Episode.id))),
                 "views": await one(select(func.coalesce(func.sum(Episode.views), 0))),
             }
 
 
     @staticmethod
-    async def top_anime(limit: int = 5) -> list[Anime]:
+    async def top_drama(limit: int = 5) -> list[Drama]:
         async with SessionLocal() as s:
-            rows = await s.scalars(select(Anime).order_by(Anime.views.desc()).limit(limit))
+            rows = await s.scalars(select(Drama).order_by(Drama.views.desc()).limit(limit))
             return list(rows)
 
 
@@ -1259,7 +1259,7 @@ class VipPay(StatesGroup):
     receipt = State()
 
 
-class AddAnime(StatesGroup):
+class AddDrama(StatesGroup):
     title = State()
     description = State()
     poster = State()
@@ -1273,7 +1273,7 @@ class AddEpisodes(StatesGroup):
     upload = State()
 
 
-class EditAnime(StatesGroup):
+class EditDrama(StatesGroup):
     value = State()
 
 
@@ -1448,7 +1448,7 @@ def lang_kb(payload: str = "") -> InlineKeyboardMarkup:
 
 def main_menu(lang: str, staff: bool) -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
-    kb.row(KeyboardButton(text=t(lang, "btn_animes"), style="primary"),
+    kb.row(KeyboardButton(text=t(lang, "btn_dramas"), style="primary"),
            KeyboardButton(text=t(lang, "btn_search"), style="primary"))
     kb.row(KeyboardButton(text=t(lang, "btn_genres"), style="primary"),
            KeyboardButton(text=t(lang, "btn_fav"), style="primary"))
@@ -1469,13 +1469,13 @@ def sub_kb(channels: list[Channel], payload: str, lang: str) -> InlineKeyboardMa
     return markup(rows)
 
 
-def anime_label(a: Anime) -> str:
+def drama_label(a: Drama) -> str:
     return f"{'💎 ' if a.is_vip else ''}{short(a.title, 45)} · #{a.id}"
 
 
-def anime_list_kb(items: list[Anime], page: int, pages: int, prefix: str,
+def drama_list_kb(items: list[Drama], page: int, pages: int, prefix: str,
                   extra: list[list] | None = None, cb: str = "an") -> InlineKeyboardMarkup:
-    rows = [[B(anime_label(a), f"{cb}:{a.id}")] for a in items]
+    rows = [[B(drama_label(a), f"{cb}:{a.id}")] for a in items]
     nav = pager(prefix, page, pages)
     if nav:
         rows.append(nav)
@@ -1495,30 +1495,30 @@ def genres_kb(genres: list[Genre]) -> InlineKeyboardMarkup:
     return markup(rows)
 
 
-def anime_kb(anime_id: int, eps: list[int], page: int, fav: bool, lang: str) -> InlineKeyboardMarkup:
+def drama_kb(drama_id: int, eps: list[int], page: int, fav: bool, lang: str) -> InlineKeyboardMarkup:
     rows = []
     chunk = eps[page * EP_PER_PAGE:(page + 1) * EP_PER_PAGE]
     for i in range(0, len(chunk), EP_COLUMNS):
-        rows.append([B(f"{n}", f"ep:{anime_id}:{n}") for n in chunk[i:i + EP_COLUMNS]])
+        rows.append([B(f"{n}", f"ep:{drama_id}:{n}") for n in chunk[i:i + EP_COLUMNS]])
     pages = max(1, -(-len(eps) // EP_PER_PAGE))
-    nav = pager(f"epp:{anime_id}", page, pages)
+    nav = pager(f"epp:{drama_id}", page, pages)
     if nav:
         rows.append(nav)
     if fav:
-        rows.append([B(t(lang, "fav_remove"), f"fav:{anime_id}:{page}", style="danger")])
+        rows.append([B(t(lang, "fav_remove"), f"fav:{drama_id}:{page}", style="danger")])
     else:
-        rows.append([B(t(lang, "fav_add"), f"fav:{anime_id}:{page}", style="success")])
+        rows.append([B(t(lang, "fav_add"), f"fav:{drama_id}:{page}", style="success")])
     return markup(rows)
 
 
-def episode_nav_kb(anime_id: int, prev_n: int | None, next_n: int | None, lang: str) -> InlineKeyboardMarkup:
+def episode_nav_kb(drama_id: int, prev_n: int | None, next_n: int | None, lang: str) -> InlineKeyboardMarkup:
     row = []
     if prev_n is not None:
-        row.append(B(t(lang, "ep_prev"), f"epn:{anime_id}:{prev_n}", style="primary"))
+        row.append(B(t(lang, "ep_prev"), f"epn:{drama_id}:{prev_n}", style="primary"))
     if next_n is not None:
-        row.append(B(t(lang, "ep_next"), f"epn:{anime_id}:{next_n}", style="primary"))
+        row.append(B(t(lang, "ep_next"), f"epn:{drama_id}:{next_n}", style="primary"))
     rows = [row] if row else []
-    rows.append([B(t(lang, "ep_all"), f"an:{anime_id}")])
+    rows.append([B(t(lang, "ep_all"), f"an:{drama_id}")])
     return markup(rows)
 
 
@@ -1541,8 +1541,8 @@ PER_PAGE = 8
 
 def panel_kb(owner: bool) -> InlineKeyboardMarkup:
     rows = [
-        [B("🎬 Anime qo'shish", "adm:addanime", style="success"),
-         B("📚 Animelar", "adm:anime:0", style="primary")],
+        [B("🎬 Drama qo'shish", "adm:adddrama", style="success"),
+         B("📚 Dramalar", "adm:drama:0", style="primary")],
         [B("🎭 Janrlar", "adm:genres"), B("📮 Post sozlamalarim", "adm:pset")],
     ]
     if owner:
@@ -1560,9 +1560,9 @@ def back_panel() -> list:
     return [B("⬅️ Panel", "adm:main")]
 
 
-def admin_anime_list_kb(items: list[Anime], page: int, pages: int) -> InlineKeyboardMarkup:
+def admin_drama_list_kb(items: list[Drama], page: int, pages: int) -> InlineKeyboardMarkup:
     rows = [[B(f"{'💎 ' if a.is_vip else ''}{short(a.title, 40)} · #{a.id}", f"aa:{a.id}")] for a in items]
-    nav = pager("adm:anime", page, pages)
+    nav = pager("adm:drama", page, pages)
     if nav:
         rows.append(nav)
     rows.append([B("🔎 Kod/nom bo'yicha topish", "adm:find", style="primary")])
@@ -1570,26 +1570,26 @@ def admin_anime_list_kb(items: list[Anime], page: int, pages: int) -> InlineKeyb
     return markup(rows)
 
 
-def anime_admin_kb(anime_id: int, owner: bool) -> InlineKeyboardMarkup:
+def drama_admin_kb(drama_id: int, owner: bool) -> InlineKeyboardMarkup:
     rows = [
-        [B("➕ Qism qo'shish", f"aep:add:{anime_id}", style="success"),
-         B("📼 Qismlar", f"aep:list:{anime_id}:0", style="primary")],
-        [B("✏️ Tahrirlash", f"aed:{anime_id}"), B("📮 Post qilish", f"apost:{anime_id}")],
-        [B("👁 Foydalanuvchi ko'rinishi", f"anu:{anime_id}")],
+        [B("➕ Qism qo'shish", f"aep:add:{drama_id}", style="success"),
+         B("📼 Qismlar", f"aep:list:{drama_id}:0", style="primary")],
+        [B("✏️ Tahrirlash", f"aed:{drama_id}"), B("📮 Post qilish", f"apost:{drama_id}")],
+        [B("👁 Foydalanuvchi ko'rinishi", f"anu:{drama_id}")],
     ]
     if owner:
-        rows.append([B("🗑 Animeni o'chirish", f"adel:{anime_id}", style="danger")])
-    rows.append([B("⬅️ Ro'yxat", "adm:anime:0")])
+        rows.append([B("🗑 Dramani o'chirish", f"adel:{drama_id}", style="danger")])
+    rows.append([B("⬅️ Ro'yxat", "adm:drama:0")])
     return markup(rows)
 
 
-def edit_menu_kb(anime_id: int, is_vip: bool) -> InlineKeyboardMarkup:
+def edit_menu_kb(drama_id: int, is_vip: bool) -> InlineKeyboardMarkup:
     return markup([
-        [B("📝 Nomi", f"aef:{anime_id}:title"), B("📄 Tavsifi", f"aef:{anime_id}:description")],
-        [B("🖼 Rasmi", f"aef:{anime_id}:poster"), B("📅 Yili", f"aef:{anime_id}:year")],
-        [B("🎭 Janrlari", f"aeg:{anime_id}")],
-        [B("💎 VIP: yoqilgan ✅" if is_vip else "💎 VIP: o'chirilgan ❌", f"aevip:{anime_id}")],
-        [B("⬅️ Orqaga", f"aa:{anime_id}")],
+        [B("📝 Nomi", f"aef:{drama_id}:title"), B("📄 Tavsifi", f"aef:{drama_id}:description")],
+        [B("🖼 Rasmi", f"aef:{drama_id}:poster"), B("📅 Yili", f"aef:{drama_id}:year")],
+        [B("🎭 Janrlari", f"aeg:{drama_id}")],
+        [B("💎 VIP: yoqilgan ✅" if is_vip else "💎 VIP: o'chirilgan ❌", f"aevip:{drama_id}")],
+        [B("⬅️ Orqaga", f"aa:{drama_id}")],
     ])
 
 
@@ -1612,26 +1612,26 @@ def genre_toggle_kb(genres: list[Genre], selected: set[int], prefix: str,
     return markup(rows)
 
 
-def episodes_admin_kb(anime_id: int, eps: list[int], page: int) -> InlineKeyboardMarkup:
+def episodes_admin_kb(drama_id: int, eps: list[int], page: int) -> InlineKeyboardMarkup:
     rows = []
     chunk = eps[page * EP_PER_PAGE:(page + 1) * EP_PER_PAGE]
     for i in range(0, len(chunk), EP_COLUMNS):
-        rows.append([B(f"{n}", f"aep:one:{anime_id}:{n}") for n in chunk[i:i + EP_COLUMNS]])
-    nav = pager(f"aep:list:{anime_id}", page, max(1, -(-len(eps) // EP_PER_PAGE)))
+        rows.append([B(f"{n}", f"aep:one:{drama_id}:{n}") for n in chunk[i:i + EP_COLUMNS]])
+    nav = pager(f"aep:list:{drama_id}", page, max(1, -(-len(eps) // EP_PER_PAGE)))
     if nav:
         rows.append(nav)
-    rows.append([B("➕ Qism qo'shish", f"aep:add:{anime_id}", style="success")])
-    rows.append([B("⬅️ Orqaga", f"aa:{anime_id}")])
+    rows.append([B("➕ Qism qo'shish", f"aep:add:{drama_id}", style="success")])
+    rows.append([B("⬅️ Orqaga", f"aa:{drama_id}")])
     return markup(rows)
 
 
-def episode_actions_kb(anime_id: int, n: int, owner: bool) -> InlineKeyboardMarkup:
+def episode_actions_kb(drama_id: int, n: int, owner: bool) -> InlineKeyboardMarkup:
     rows = [
-        [B("👁 Ko'rish", f"aep:view:{anime_id}:{n}"), B("🔄 Almashtirish", f"aep:rep:{anime_id}:{n}")],
+        [B("👁 Ko'rish", f"aep:view:{drama_id}:{n}"), B("🔄 Almashtirish", f"aep:rep:{drama_id}:{n}")],
     ]
     if owner:
-        rows.append([B("🗑 O'chirish", f"aep:del:{anime_id}:{n}", style="danger")])
-    rows.append([B("⬅️ Qismlar", f"aep:list:{anime_id}:0")])
+        rows.append([B("🗑 O'chirish", f"aep:del:{drama_id}:{n}", style="danger")])
+    rows.append([B("⬅️ Qismlar", f"aep:list:{drama_id}:0")])
     return markup(rows)
 
 
@@ -1748,18 +1748,18 @@ class _Safe(dict):
         return "{" + key + "}"
 
 
-def render_caption(anime, poster_name: str | None = None, extra: str | None = None,
+def render_caption(drama, poster_name: str | None = None, extra: str | None = None,
                    template: str | None = None) -> str:
     template = template or setting("post_template") or DEFAULT_TEMPLATE
     limit = 700
     while True:
         fields = _Safe(
-            title=esc(anime.title),
-            genres=esc(", ".join(g.name for g in anime.genres) or "—"),
-            year=anime.year or "—",
-            code=anime.id,
-            vip="💎 VIP" if anime.is_vip else "",
-            description=esc(short(anime.description, limit)),
+            title=esc(drama.title),
+            genres=esc(", ".join(g.name for g in drama.genres) or "—"),
+            year=drama.year or "—",
+            code=drama.id,
+            vip="💎 VIP" if drama.is_vip else "",
+            description=esc(short(drama.description, limit)),
         )
         text = template.format_map(fields)
         if extra:
@@ -1771,33 +1771,33 @@ def render_caption(anime, poster_name: str | None = None, extra: str | None = No
         limit -= 120
 
 
-def post_kb(anime_id: int) -> InlineKeyboardMarkup:
+def post_kb(drama_id: int) -> InlineKeyboardMarkup:
     rows = [[B(t("uz", "watch_btn"),
-               url=f"https://t.me/{bot_username()}?start=a{anime_id}", style="success")]]
+               url=f"https://t.me/{bot_username()}?start=a{drama_id}", style="success")]]
     ig = setting("instagram_url")
     if ig:
         rows.append([B("📸 Instagram", url=ig, style="primary")])
     return markup(rows)
 
 
-def sample_anime():
-    """Shablon namunasi uchun soxta anime."""
+def sample_drama():
+    """Shablon namunasi uchun soxta drama."""
     return SimpleNamespace(
-        id=1, title="Namuna anime", year=2024, is_vip=False, poster=None,
+        id=1, title="Namuna drama", year=2024, is_vip=False, poster=None,
         description="Bu shablon qanday ko'rinishini ko'rsatuvchi namuna tavsif.",
         genres=[SimpleNamespace(name="Action"), SimpleNamespace(name="Drama")],
     )
 
 
-async def send_post(bot: Bot, anime, chat_id: int, poster_name: str | None = None,
+async def send_post(bot: Bot, drama, chat_id: int, poster_name: str | None = None,
                     extra: str | None = None) -> str | None:
     """Muvaffaqiyatli bo'lsa None, aks holda xato matnini qaytaradi."""
-    caption = render_caption(anime, poster_name, extra)
-    kb = post_kb(anime.id)
+    caption = render_caption(drama, poster_name, extra)
+    kb = post_kb(drama.id)
     for attempt in range(2):
         try:
-            if anime.poster:
-                await bot.send_photo(chat_id, anime.poster, caption=caption, reply_markup=kb)
+            if drama.poster:
+                await bot.send_photo(chat_id, drama.poster, caption=caption, reply_markup=kb)
             else:
                 await bot.send_message(chat_id, caption, reply_markup=kb)
             return None
@@ -1811,7 +1811,7 @@ async def send_post(bot: Bot, anime, chat_id: int, poster_name: str | None = Non
     return "Noma'lum xato"
 
 
-async def auto_post(bot: Bot, anime, staff_id: int, poster_name: str | None,
+async def auto_post(bot: Bot, drama, staff_id: int, poster_name: str | None,
                     extra: str | None = None) -> list[str]:
     """Admin avto-postni yoqqan bo'lsa, tanlagan kanallariga yuboradi. Hisobot qatorlarini qaytaradi."""
     if setting(f"autopost:{staff_id}") != "1":
@@ -1821,7 +1821,7 @@ async def auto_post(bot: Bot, anime, staff_id: int, poster_name: str | None,
     for ch in await repo.list_channels("post"):
         if ch.id not in chosen:
             continue
-        err = await send_post(bot, anime, ch.chat_id, poster_name, extra)
+        err = await send_post(bot, drama, ch.chat_id, poster_name, extra)
         lines.append(f"✅ {esc(ch.title)}" if err is None else f"❌ {esc(ch.title)}: {esc(short(err, 80))}")
     return lines
 
@@ -1899,16 +1899,16 @@ async def scheduler_loop(bot: Bot) -> None:
             ticks += 1
             for item in await repo.due_scheduled(utcnow()):
                 await repo.mark_scheduled_done(item.id)  # ikki marta yuborilmasligi uchun avval belgilaymiz
-                anime = await repo.get_anime(item.anime_id)
-                if anime is None:
+                drama = await repo.get_drama(item.drama_id)
+                if drama is None:
                     continue
-                err = await send_post(bot, anime, item.chat_id)
+                err = await send_post(bot, drama, item.chat_id)
                 if err:
                     logger.warning("Rejalashtirilgan post yuborilmadi: %s", err)
                     try:
                         await bot.send_message(
                             item.created_by,
-                            f"❌ Rejalashtirilgan post yuborilmadi\n🎬 {esc(anime.title)}\n"
+                            f"❌ Rejalashtirilgan post yuborilmadi\n🎬 {esc(drama.title)}\n"
                             f"📡 {esc(item.channel_title)}\n⚠️ {esc(short(err, 120))}",
                         )
                     except Exception:  # noqa: BLE001
@@ -2049,10 +2049,10 @@ async def on_error(event: ErrorEvent) -> bool:
 
 
 # ════════════════════════════════════════════════════════════════════════════
-# HANDLER: FOYDALANUVCHI (anime, qidiruv, qismlar)
+# HANDLER: FOYDALANUVCHI (drama, qidiruv, qismlar)
 # ════════════════════════════════════════════════════════════════════════════
 
-user_router = Router(name="user_anime")
+user_router = Router(name="user_drama")
 fallback_router = Router(name="fallback")  # eng oxirida ulanadi
 
 
@@ -2060,58 +2060,58 @@ async def has_vip(uid: int) -> bool:
     return is_staff(uid) or await repo.is_vip_active(uid)
 
 
-# ───────────────────────────── Anime kartochkasi ─────────────────────────────
-def build_card(lang: str, anime, eps_count: int) -> str:
+# ───────────────────────────── Drama kartochkasi ─────────────────────────────
+def build_card(lang: str, drama, eps_count: int) -> str:
     text = t(
         lang, "card",
-        title=esc(anime.title), vip=" 💎" if anime.is_vip else "",
-        genres=esc(", ".join(g.name for g in anime.genres) or "—"),
-        year=anime.year or "—", code=anime.id, eps=eps_count, views=anime.views,
-        desc=esc(short(anime.description, 500)),
+        title=esc(drama.title), vip=" 💎" if drama.is_vip else "",
+        genres=esc(", ".join(g.name for g in drama.genres) or "—"),
+        year=drama.year or "—", code=drama.id, eps=eps_count, views=drama.views,
+        desc=esc(short(drama.description, 500)),
     )
     return text + (t(lang, "card_pick") if eps_count else t(lang, "card_no_eps"))
 
 
-async def show_anime(bot: Bot, chat_id: int, uid: int, lang: str, anime_id: int) -> None:
-    anime = await repo.get_anime(anime_id)
-    if anime is None:
-        await bot.send_message(chat_id, t(lang, "anime_missing"))
+async def show_drama(bot: Bot, chat_id: int, uid: int, lang: str, drama_id: int) -> None:
+    drama = await repo.get_drama(drama_id)
+    if drama is None:
+        await bot.send_message(chat_id, t(lang, "drama_missing"))
         return
-    eps = await repo.list_episode_numbers(anime_id)
-    fav = await repo.is_favorite(uid, anime_id)
-    caption = build_card(lang, anime, len(eps))
-    markup_ = anime_kb(anime_id, eps, 0, fav, lang)
-    spawn(repo.add_anime_view(anime_id))
+    eps = await repo.list_episode_numbers(drama_id)
+    fav = await repo.is_favorite(uid, drama_id)
+    caption = build_card(lang, drama, len(eps))
+    markup_ = drama_kb(drama_id, eps, 0, fav, lang)
+    spawn(repo.add_drama_view(drama_id))
     try:
-        if anime.poster:
-            await bot.send_photo(chat_id, anime.poster, caption=caption,
+        if drama.poster:
+            await bot.send_photo(chat_id, drama.poster, caption=caption,
                                  reply_markup=markup_, protect_content=True)
             return
     except TelegramBadRequest:
-        logger.warning("Anime #%s posteri yuborilmadi, matn bilan almashtirildi", anime_id)
+        logger.warning("Drama #%s posteri yuborilmadi, matn bilan almashtirildi", drama_id)
     await bot.send_message(chat_id, caption, reply_markup=markup_, protect_content=True)
 
 
 @user_router.callback_query(F.data.startswith("an:"))
-async def cb_anime(cb: CallbackQuery, bot: Bot) -> None:
+async def cb_drama(cb: CallbackQuery, bot: Bot) -> None:
     await cb.answer()
-    await show_anime(bot, cb.message.chat.id, cb.from_user.id, lang_of(cb.from_user.id),
+    await show_drama(bot, cb.message.chat.id, cb.from_user.id, lang_of(cb.from_user.id),
                      int(cb.data.split(":")[1]))
 
 
-# ───────────────────────────── Barcha animelar ─────────────────────────────
+# ───────────────────────────── Barcha dramalar ─────────────────────────────
 async def _all_list(page: int, lang: str):
-    total = await repo.count_anime()
+    total = await repo.count_drama()
     if total == 0:
         return t(lang, "list_empty"), None
     pages = pages_count(total, PER_PAGE)
     page = max(0, min(page, pages - 1))
-    items = await repo.list_anime(page * PER_PAGE, PER_PAGE)
-    return t(lang, "list_title", total=total), anime_list_kb(items, page, pages, "al")
+    items = await repo.list_drama(page * PER_PAGE, PER_PAGE)
+    return t(lang, "list_title", total=total), drama_list_kb(items, page, pages, "al")
 
 
-@user_router.message(F.text.in_(variants("btn_animes")))
-async def menu_animes(message: Message, state: FSMContext) -> None:
+@user_router.message(F.text.in_(variants("btn_dramas")))
+async def menu_dramas(message: Message, state: FSMContext) -> None:
     await state.clear()
     text, markup_ = await _all_list(0, lang_of(message.from_user.id))
     await message.answer(text, reply_markup=markup_)
@@ -2154,14 +2154,14 @@ async def cb_genre_list(cb: CallbackQuery) -> None:
     if genre is None:
         await cb.answer(t(lang, "genres_empty"), show_alert=True)
         return
-    items, total = await repo.anime_by_genre(int(gid), int(page) * PER_PAGE, PER_PAGE)
+    items, total = await repo.drama_by_genre(int(gid), int(page) * PER_PAGE, PER_PAGE)
     back = [[B(t(lang, "back"), "gl")]]
     if total == 0:
         await render(cb, t(lang, "genre_list_empty"), markup(back))
     else:
         pages = pages_count(total, PER_PAGE)
         await render(cb, t(lang, "genre_list_title", genre=esc(genre.name), total=total),
-                     anime_list_kb(items, int(page), pages, f"gn:{gid}", extra=back))
+                     drama_list_kb(items, int(page), pages, f"gn:{gid}", extra=back))
     await cb.answer()
 
 
@@ -2171,7 +2171,7 @@ async def _fav_view(uid: int, page: int, lang: str):
     if total == 0:
         return t(lang, "fav_empty"), None
     pages = pages_count(total, PER_PAGE)
-    return t(lang, "fav_title", total=total), anime_list_kb(items, page, pages, "fv")
+    return t(lang, "fav_title", total=total), drama_list_kb(items, page, pages, "fv")
 
 
 @user_router.message(F.text.in_(variants("btn_fav")))
@@ -2195,7 +2195,7 @@ async def cb_fav_toggle(cb: CallbackQuery) -> None:
     added = await repo.toggle_favorite(uid, int(aid))
     eps = await repo.list_episode_numbers(int(aid))
     try:
-        await cb.message.edit_reply_markup(reply_markup=anime_kb(int(aid), eps, int(page), added, lang))
+        await cb.message.edit_reply_markup(reply_markup=drama_kb(int(aid), eps, int(page), added, lang))
     except TelegramBadRequest:
         pass
     await cb.answer(t(lang, "fav_added" if added else "fav_removed"))
@@ -2204,15 +2204,15 @@ async def cb_fav_toggle(cb: CallbackQuery) -> None:
 # ───────────────────────────── Qidiruv ─────────────────────────────
 async def do_search(message: Message, query: str) -> None:
     lang = lang_of(message.from_user.id)
-    results = await repo.search_anime(query, limit=10)
+    results = await repo.search_drama(query, limit=10)
     if not results:
         await message.answer(t(lang, "search_none"))
         return
     if len(results) == 1 and query.strip().isdigit():
-        await show_anime(message.bot, message.chat.id, message.from_user.id, lang, results[0].id)
+        await show_drama(message.bot, message.chat.id, message.from_user.id, lang, results[0].id)
         return
     await message.answer(t(lang, "search_found"),
-                         reply_markup=anime_list_kb(results, 0, 1, "al"))
+                         reply_markup=drama_list_kb(results, 0, 1, "al"))
 
 
 @user_router.message(F.text.in_(variants("btn_search")))
@@ -2229,17 +2229,17 @@ async def search_query(message: Message, state: FSMContext) -> None:
 
 
 # ───────────────────────────── Qismlarni yuborish ─────────────────────────────
-async def _send_episode(bot: Bot, chat_id: int, uid: int, lang: str, anime, number: int) -> str | None:
+async def _send_episode(bot: Bot, chat_id: int, uid: int, lang: str, drama, number: int) -> str | None:
     """Qismni yuboradi. Muvaffaqiyatli bo'lsa None, aks holda xato kaliti."""
-    ep = await repo.get_episode(anime.id, number)
+    ep = await repo.get_episode(drama.id, number)
     if ep is None:
         return "ep_missing"
-    eps = await repo.list_episode_numbers(anime.id)
+    eps = await repo.list_episode_numbers(drama.id)
     idx = eps.index(number)
     prev_n = eps[idx - 1] if idx > 0 else None
     next_n = eps[idx + 1] if idx < len(eps) - 1 else None
-    caption = t(lang, "ep_caption", title=esc(anime.title), num=number, bot=f"@{bot_username()}")
-    nav = episode_nav_kb(anime.id, prev_n, next_n, lang)
+    caption = t(lang, "ep_caption", title=esc(drama.title), num=number, bot=f"@{bot_username()}")
+    nav = episode_nav_kb(drama.id, prev_n, next_n, lang)
     try:
         if ep.file_type == "document":
             await bot.send_document(chat_id, ep.file_id, caption=caption, reply_markup=nav,
@@ -2248,25 +2248,25 @@ async def _send_episode(bot: Bot, chat_id: int, uid: int, lang: str, anime, numb
             await bot.send_video(chat_id, ep.file_id, caption=caption, reply_markup=nav,
                                  protect_content=True, supports_streaming=True)
     except TelegramAPIError as exc:
-        logger.warning("Qism yuborilmadi (%s/%s): %s", anime.id, number, exc)
+        logger.warning("Qism yuborilmadi (%s/%s): %s", drama.id, number, exc)
         return "ep_send_failed"
-    spawn(repo.add_episode_view(anime.id, number))
+    spawn(repo.add_episode_view(drama.id, number))
     return None
 
 
 async def _episode_flow(cb: CallbackQuery, bot: Bot, strip_old_kb: bool) -> None:
     _, aid, num = cb.data.split(":")
     uid, lang = cb.from_user.id, lang_of(cb.from_user.id)
-    anime = await repo.get_anime(int(aid))
-    if anime is None:
-        await cb.answer(t(lang, "anime_missing"), show_alert=True)
+    drama = await repo.get_drama(int(aid))
+    if drama is None:
+        await cb.answer(t(lang, "drama_missing"), show_alert=True)
         return
-    if anime.is_vip and not await has_vip(uid):
+    if drama.is_vip and not await has_vip(uid):
         await cb.answer(t(lang, "vip_only_alert"), show_alert=True)
         await bot.send_message(cb.message.chat.id, t(lang, "vip_only_text"), reply_markup=vip_buy_kb(lang))
         return
     await cb.answer()
-    error = await _send_episode(bot, cb.message.chat.id, uid, lang, anime, int(num))
+    error = await _send_episode(bot, cb.message.chat.id, uid, lang, drama, int(num))
     if error:
         await bot.send_message(cb.message.chat.id, t(lang, error))
     elif strip_old_kb:
@@ -2293,7 +2293,7 @@ async def cb_episode_page(cb: CallbackQuery) -> None:
     eps = await repo.list_episode_numbers(int(aid))
     fav = await repo.is_favorite(uid, int(aid))
     try:
-        await cb.message.edit_reply_markup(reply_markup=anime_kb(int(aid), eps, int(page), fav, lang))
+        await cb.message.edit_reply_markup(reply_markup=drama_kb(int(aid), eps, int(page), fav, lang))
     except TelegramBadRequest:
         pass
     await cb.answer()
@@ -2313,7 +2313,7 @@ start_router = Router(name="start")
 
 
 async def proceed(bot: Bot, chat_id: int, user, lang: str, payload: str) -> None:
-    """Til tanlangandan keyin: obuna tekshiruvi → menyu → (bo'lsa) anime."""
+    """Til tanlangandan keyin: obuna tekshiruvi → menyu → (bo'lsa) drama."""
     uid = user.id
     if not is_staff(uid):
         missing = await missing_channels(bot, uid)
@@ -2329,7 +2329,7 @@ async def proceed(bot: Bot, chat_id: int, user, lang: str, payload: str) -> None
     )
     match = re.fullmatch(r"a(\d{1,9})", payload or "")
     if match:
-        await show_anime(bot, chat_id, uid, lang, int(match.group(1)))
+        await show_drama(bot, chat_id, uid, lang, int(match.group(1)))
 
 
 @start_router.message(CommandStart())
@@ -2610,8 +2610,8 @@ async def _pset_view(uid: int):
     text = (
         "📮 <b>Post sozlamalarim</b>\n\n"
         f"🤖 Avtomatik post: <b>{'yoqilgan ✅' if auto else 'o‘chirilgan ❌'}</b>\n\n"
-        "Yoqilsa, siz qo'shgan animelar <b>pastda belgilangan</b> kanallarga avtomatik tushadi.\n"
-        "O'chiq bo'lsa, postni o'zingiz anime sahifasidagi «📮 Post qilish» orqali istagan kanalga yuborasiz."
+        "Yoqilsa, siz qo'shgan dramalar <b>pastda belgilangan</b> kanallarga avtomatik tushadi.\n"
+        "O'chiq bo'lsa, postni o'zingiz drama sahifasidagi «📮 Post qilish» orqali istagan kanalga yuborasiz."
     )
     if not channels:
         text += "\n\n⚠️ Post kanallari yo'q. Ularni Owner qo'shadi."
@@ -2651,92 +2651,92 @@ async def cb_pset_channel(cb: CallbackQuery) -> None:
 
 
 # ════════════════════════════════════════════════════════════════════════════
-# HANDLER: ADMIN ANIME BOSHQARUVI
+# HANDLER: ADMIN DRAMA BOSHQARUVI
 # ════════════════════════════════════════════════════════════════════════════
 
-anime_router = Router(name="admin_anime")
-anime_router.message.filter(IsStaff())
-anime_router.callback_query.filter(IsStaff())
+drama_router = Router(name="admin_drama")
+drama_router.message.filter(IsStaff())
+drama_router.callback_query.filter(IsStaff())
 
 
 # ───────────────────────────── Yordamchilar ─────────────────────────────
-async def anime_admin_view(anime_id: int, uid: int):
-    anime = await repo.get_anime(anime_id)
-    if anime is None:
-        return "❌ Anime topilmadi.", markup([[B("⬅️ Ro'yxat", "adm:anime:0")]])
-    eps = await repo.list_episode_numbers(anime_id)
+async def drama_admin_view(drama_id: int, uid: int):
+    drama = await repo.get_drama(drama_id)
+    if drama is None:
+        return "❌ Drama topilmadi.", markup([[B("⬅️ Ro'yxat", "adm:drama:0")]])
+    eps = await repo.list_episode_numbers(drama_id)
     text = (
-        f"🎬 <b>{esc(anime.title)}</b>  <code>#{anime.id}</code>\n\n"
-        f"🎭 Janr: {esc(', '.join(g.name for g in anime.genres) or '—')}\n"
-        f"📅 Yil: {anime.year or '—'}\n"
-        f"💎 VIP: {'ha' if anime.is_vip else 'yo‘q'}\n"
+        f"🎬 <b>{esc(drama.title)}</b>  <code>#{drama.id}</code>\n\n"
+        f"🎭 Janr: {esc(', '.join(g.name for g in drama.genres) or '—')}\n"
+        f"📅 Yil: {drama.year or '—'}\n"
+        f"💎 VIP: {'ha' if drama.is_vip else 'yo‘q'}\n"
         f"📼 Qismlar: <b>{len(eps)}</b>\n"
-        f"👁 Ko'rishlar: {anime.views}\n\n"
-        f"📝 {esc(short(anime.description, 400))}"
+        f"👁 Ko'rishlar: {drama.views}\n\n"
+        f"📝 {esc(short(drama.description, 400))}"
     )
-    return text, anime_admin_kb(anime_id, is_owner(uid))
+    return text, drama_admin_kb(drama_id, is_owner(uid))
 
 
-async def show_card(event: Message | CallbackQuery, anime_id: int) -> None:
-    text, kb = await anime_admin_view(anime_id, event.from_user.id)
+async def show_card(event: Message | CallbackQuery, drama_id: int) -> None:
+    text, kb = await drama_admin_view(drama_id, event.from_user.id)
     if isinstance(event, CallbackQuery):
         await render(event, text, kb)
     else:
         await event.answer(text, reply_markup=kb)
 
 
-async def _start_upload(event: Message | CallbackQuery, state: FSMContext, anime_id: int, is_new: bool) -> None:
-    base = await repo.last_episode_number(anime_id)
+async def _start_upload(event: Message | CallbackQuery, state: FSMContext, drama_id: int, is_new: bool) -> None:
+    base = await repo.last_episode_number(drama_id)
     await state.set_state(AddEpisodes.upload)
-    await state.update_data(anime_id=anime_id, is_new=is_new, base=base)
+    await state.update_data(drama_id=drama_id, is_new=is_new, base=base)
     text = (
         f"📼 <b>Qism yuklash</b>  (hozir {base} ta qism bor)\n\n"
         "Videolarni <b>birma-bir, tartib bilan</b> yuboring. Raqamlar avtomatik beriladi: "
         f"<b>{base + 1}-qism</b>, {base + 2}-qism va hokazo.\n\n"
         "Hammasini yuborib bo'lgach, «✅ Tugatish» tugmasini bosing 👇"
     )
-    kb = markup([[B("✅ Tugatish", f"epdone:{anime_id}", style="success")]])
+    kb = markup([[B("✅ Tugatish", f"epdone:{drama_id}", style="success")]])
     if isinstance(event, CallbackQuery):
         await render(event, text, kb)
     else:
         await event.answer(text, reply_markup=kb)
 
 
-# ───────────────────────────── Yangi anime qo'shish ─────────────────────────────
-@anime_router.callback_query(F.data == "adm:addanime")
+# ───────────────────────────── Yangi drama qo'shish ─────────────────────────────
+@drama_router.callback_query(F.data == "adm:adddrama")
 async def add_start(cb: CallbackQuery, state: FSMContext) -> None:
     await state.clear()
-    await state.set_state(AddAnime.title)
-    await render(cb, "🎬 <b>Yangi anime</b>\n\n1️⃣ Anime <b>nomini</b> yuboring:", cancel_kb())
+    await state.set_state(AddDrama.title)
+    await render(cb, "🎬 <b>Yangi drama</b>\n\n1️⃣ Drama <b>nomini</b> yuboring:", cancel_kb())
     await cb.answer()
 
 
-@anime_router.message(AddAnime.title, F.text)
+@drama_router.message(AddDrama.title, F.text)
 async def add_title(message: Message, state: FSMContext) -> None:
     title = message.text.strip()
     if not 1 <= len(title) <= 200:
         await message.answer("⚠️ Nom 1–200 belgi bo'lishi kerak. Qayta yuboring:")
         return
     await state.update_data(title=title)
-    await state.set_state(AddAnime.description)
-    await message.answer("2️⃣ Endi anime <b>tavsifini</b> yuboring:", reply_markup=cancel_kb())
+    await state.set_state(AddDrama.description)
+    await message.answer("2️⃣ Endi drama <b>tavsifini</b> yuboring:", reply_markup=cancel_kb())
 
 
-@anime_router.message(AddAnime.description, F.text)
+@drama_router.message(AddDrama.description, F.text)
 async def add_description(message: Message, state: FSMContext) -> None:
     await state.update_data(description=message.text.strip()[:3000])
-    await state.set_state(AddAnime.poster)
-    await message.answer("3️⃣ Anime <b>rasmini (poster)</b> yuboring 🖼", reply_markup=cancel_kb())
+    await state.set_state(AddDrama.poster)
+    await message.answer("3️⃣ Drama <b>rasmini (poster)</b> yuboring 🖼", reply_markup=cancel_kb())
 
 
-@anime_router.message(AddAnime.poster, F.photo)
+@drama_router.message(AddDrama.poster, F.photo)
 async def add_poster(message: Message, state: FSMContext) -> None:
     await state.update_data(poster=message.photo[-1].file_id, genres=[])
-    await state.set_state(AddAnime.genres)
+    await state.set_state(AddDrama.genres)
     await _genre_step(message, state)
 
 
-@anime_router.message(AddAnime.poster)
+@drama_router.message(AddDrama.poster)
 async def add_poster_wrong(message: Message) -> None:
     await message.answer("⚠️ Iltimos, <b>rasm</b> yuboring (fayl emas, oddiy rasm).")
 
@@ -2753,7 +2753,7 @@ async def _genre_step(event: Message | CallbackQuery, state: FSMContext) -> None
         await event.answer(text, reply_markup=kb)
 
 
-@anime_router.callback_query(AddAnime.genres, F.data.startswith("ng:"))
+@drama_router.callback_query(AddDrama.genres, F.data.startswith("ng:"))
 async def add_genre_toggle(cb: CallbackQuery, state: FSMContext) -> None:
     gid = int(cb.data.split(":")[1])
     selected = set((await state.get_data()).get("genres", []))
@@ -2763,14 +2763,14 @@ async def add_genre_toggle(cb: CallbackQuery, state: FSMContext) -> None:
     await cb.answer()
 
 
-@anime_router.callback_query(AddAnime.genres, F.data == "ngnew")
+@drama_router.callback_query(AddDrama.genres, F.data == "ngnew")
 async def add_genre_new(cb: CallbackQuery, state: FSMContext) -> None:
-    await state.set_state(AddAnime.new_genre)
+    await state.set_state(AddDrama.new_genre)
     await render(cb, "➕ Yangi <b>janr nomini</b> yuboring:", cancel_kb())
     await cb.answer()
 
 
-@anime_router.message(AddAnime.new_genre, F.text)
+@drama_router.message(AddDrama.new_genre, F.text)
 async def add_genre_created(message: Message, state: FSMContext) -> None:
     name = message.text.strip()
     if not 2 <= len(name) <= 40:
@@ -2780,22 +2780,22 @@ async def add_genre_created(message: Message, state: FSMContext) -> None:
     selected = set((await state.get_data()).get("genres", []))
     selected.add(genre.id)
     await state.update_data(genres=sorted(selected))
-    await state.set_state(AddAnime.genres)
+    await state.set_state(AddDrama.genres)
     await _genre_step(message, state)
 
 
-@anime_router.callback_query(AddAnime.genres, F.data == "ngdone")
+@drama_router.callback_query(AddDrama.genres, F.data == "ngdone")
 async def add_genres_done(cb: CallbackQuery, state: FSMContext) -> None:
-    await state.set_state(AddAnime.year)
+    await state.set_state(AddDrama.year)
     kb = markup([[B("⏭ O'tkazib yuborish", "nyear:skip", style="primary")],
                  [B("❌ Bekor qilish", "cancel", style="danger")]])
-    await render(cb, "5️⃣ Anime <b>yilini</b> yuboring (masalan: 2023):", kb)
+    await render(cb, "5️⃣ Drama <b>yilini</b> yuboring (masalan: 2023):", kb)
     await cb.answer()
 
 
 async def _ask_vip(event: Message | CallbackQuery, state: FSMContext) -> None:
-    await state.set_state(AddAnime.vip)
-    text = "6️⃣ Bu anime <b>faqat VIP</b> foydalanuvchilar uchunmi? 💎"
+    await state.set_state(AddDrama.vip)
+    text = "6️⃣ Bu drama <b>faqat VIP</b> foydalanuvchilar uchunmi? 💎"
     kb = yes_no("nvip:1", "nvip:0")
     if isinstance(event, CallbackQuery):
         await render(event, text, kb)
@@ -2803,14 +2803,14 @@ async def _ask_vip(event: Message | CallbackQuery, state: FSMContext) -> None:
         await event.answer(text, reply_markup=kb)
 
 
-@anime_router.callback_query(AddAnime.year, F.data == "nyear:skip")
+@drama_router.callback_query(AddDrama.year, F.data == "nyear:skip")
 async def add_year_skip(cb: CallbackQuery, state: FSMContext) -> None:
     await state.update_data(year=None)
     await _ask_vip(cb, state)
     await cb.answer()
 
 
-@anime_router.message(AddAnime.year, F.text)
+@drama_router.message(AddDrama.year, F.text)
 async def add_year(message: Message, state: FSMContext) -> None:
     text = message.text.strip()
     if not text.isdigit() or not 1950 <= int(text) <= 2100:
@@ -2820,29 +2820,29 @@ async def add_year(message: Message, state: FSMContext) -> None:
     await _ask_vip(message, state)
 
 
-@anime_router.callback_query(AddAnime.vip, F.data.startswith("nvip:"))
+@drama_router.callback_query(AddDrama.vip, F.data.startswith("nvip:"))
 async def add_finish(cb: CallbackQuery, state: FSMContext) -> None:
     data = await state.get_data()
-    anime_id = await repo.create_anime(
+    drama_id = await repo.create_drama(
         title=data["title"], description=data.get("description", ""), poster=data.get("poster"),
         year=data.get("year"), is_vip=cb.data.endswith(":1"), created_by=cb.from_user.id,
         genre_ids=data.get("genres", []),
     )
     await state.clear()
-    await cb.message.answer(f"✅ Anime yaratildi! Kodi: <code>{anime_id}</code>")
-    await _start_upload(cb, state, anime_id, is_new=True)
+    await cb.message.answer(f"✅ Drama yaratildi! Kodi: <code>{drama_id}</code>")
+    await _start_upload(cb, state, drama_id, is_new=True)
     await cb.answer()
 
 
 # ───────────────────────────── Qism yuklash ─────────────────────────────
-@anime_router.callback_query(F.data.startswith("aep:add:"))
+@drama_router.callback_query(F.data.startswith("aep:add:"))
 async def ep_add_start(cb: CallbackQuery, state: FSMContext) -> None:
     await state.clear()
     await _start_upload(cb, state, int(cb.data.split(":")[2]), is_new=False)
     await cb.answer()
 
 
-@anime_router.message(AddEpisodes.upload, F.video | F.document)
+@drama_router.message(AddEpisodes.upload, F.video | F.document)
 async def ep_received(message: Message, state: FSMContext) -> None:
     if message.video:
         file_id, ftype = message.video.file_id, "video"
@@ -2852,88 +2852,88 @@ async def ep_received(message: Message, state: FSMContext) -> None:
         await message.answer("⚠️ Faqat <b>video</b> yuboring.")
         return
     data = await state.get_data()
-    number = await repo.add_episode(data["anime_id"], file_id, ftype)
-    kb = markup([[B("✅ Tugatish", f"epdone:{data['anime_id']}", style="success")]])
+    number = await repo.add_episode(data["drama_id"], file_id, ftype)
+    kb = markup([[B("✅ Tugatish", f"epdone:{data['drama_id']}", style="success")]])
     await message.reply(f"✅ <b>{number}-qism</b> qo'shildi. Keyingisini yuboring yoki tugating.", reply_markup=kb)
 
 
-@anime_router.message(AddEpisodes.upload)
+@drama_router.message(AddEpisodes.upload)
 async def ep_wrong(message: Message) -> None:
     await message.answer("📼 Video yuboring yoki «✅ Tugatish» tugmasini bosing.")
 
 
-@anime_router.callback_query(F.data.startswith("epdone:"))
+@drama_router.callback_query(F.data.startswith("epdone:"))
 async def ep_done(cb: CallbackQuery, state: FSMContext, bot: Bot) -> None:
-    anime_id = int(cb.data.split(":")[1])
+    drama_id = int(cb.data.split(":")[1])
     data = await state.get_data()
     await state.clear()
-    base = data.get("base", 0) if data.get("anime_id") == anime_id else 0
-    last = await repo.last_episode_number(anime_id)
+    base = data.get("base", 0) if data.get("drama_id") == drama_id else 0
+    last = await repo.last_episode_number(drama_id)
     added = max(0, last - base)
     note = f"✅ Tayyor! <b>{added}</b> ta qism qo'shildi." if added else "ℹ️ Yangi qism qo'shilmadi."
-    anime = await repo.get_anime(anime_id)
+    drama = await repo.get_drama(drama_id)
     report: list[str] = []
-    if anime and added:
+    if drama and added:
         extra = None
         if not data.get("is_new"):
             first = base + 1
             extra = f"🆕 <b>Yangi qism: {first}-qism</b>" if added == 1 else f"🆕 <b>Yangi qismlar: {first}–{last}</b>"
-        report = await auto_post(bot, anime, cb.from_user.id, cb.from_user.full_name, extra)
+        report = await auto_post(bot, drama, cb.from_user.id, cb.from_user.full_name, extra)
     if report:
         note += "\n\n📮 <b>Avtomatik post:</b>\n" + "\n".join(report)
     await cb.message.answer(note)
-    await show_card(cb, anime_id)
+    await show_card(cb, drama_id)
     await cb.answer()
 
 
-# ───────────────────────────── Animelar ro'yxati va qidirish ─────────────────────────────
-@anime_router.callback_query(F.data.startswith("adm:anime:"))
+# ───────────────────────────── Dramalar ro'yxati va qidirish ─────────────────────────────
+@drama_router.callback_query(F.data.startswith("adm:drama:"))
 async def admin_list(cb: CallbackQuery, state: FSMContext) -> None:
     await state.clear()
-    total = await repo.count_anime()
+    total = await repo.count_drama()
     pages = pages_count(total, PER_PAGE)
     page = max(0, min(int(cb.data.split(":")[2]), pages - 1))
-    items = await repo.list_anime(page * PER_PAGE, PER_PAGE)
-    text = f"📚 <b>Animelar</b> — {total} ta" if total else "📚 Hozircha animelar yo'q."
-    await render(cb, text, admin_anime_list_kb(items, page, pages))
+    items = await repo.list_drama(page * PER_PAGE, PER_PAGE)
+    text = f"📚 <b>Dramalar</b> — {total} ta" if total else "📚 Hozircha dramalar yo'q."
+    await render(cb, text, admin_drama_list_kb(items, page, pages))
     await cb.answer()
 
 
-@anime_router.callback_query(F.data == "adm:find")
+@drama_router.callback_query(F.data == "adm:find")
 async def find_start(cb: CallbackQuery, state: FSMContext) -> None:
     await state.set_state(AdminFind.query)
-    await render(cb, "🔎 Anime <b>kodi</b> yoki <b>nomini</b> yuboring:", cancel_kb())
+    await render(cb, "🔎 Drama <b>kodi</b> yoki <b>nomini</b> yuboring:", cancel_kb())
     await cb.answer()
 
 
-@anime_router.message(AdminFind.query, F.text)
+@drama_router.message(AdminFind.query, F.text)
 async def find_query(message: Message, state: FSMContext) -> None:
     await state.clear()
-    results = await repo.search_anime(message.text, limit=10)
+    results = await repo.search_drama(message.text, limit=10)
     if not results:
-        await message.answer("😕 Hech narsa topilmadi.", reply_markup=markup([[B("⬅️ Ro'yxat", "adm:anime:0")]]))
+        await message.answer("😕 Hech narsa topilmadi.", reply_markup=markup([[B("⬅️ Ro'yxat", "adm:drama:0")]]))
         return
     rows = [[B(f"{'💎 ' if a.is_vip else ''}{short(a.title, 40)} · #{a.id}", f"aa:{a.id}")] for a in results]
-    rows.append([B("⬅️ Ro'yxat", "adm:anime:0")])
+    rows.append([B("⬅️ Ro'yxat", "adm:drama:0")])
     await message.answer("🔎 <b>Natijalar:</b>", reply_markup=markup(rows))
 
 
-@anime_router.callback_query(F.data.startswith("aa:"))
+@drama_router.callback_query(F.data.startswith("aa:"))
 async def cb_card(cb: CallbackQuery, state: FSMContext) -> None:
     await state.clear()
     await show_card(cb, int(cb.data.split(":")[1]))
     await cb.answer()
 
 
-@anime_router.callback_query(F.data.startswith("anu:"))
+@drama_router.callback_query(F.data.startswith("anu:"))
 async def cb_user_view(cb: CallbackQuery, bot: Bot) -> None:
     await cb.answer()
-    await show_anime(bot, cb.message.chat.id, cb.from_user.id, lang_of(cb.from_user.id),
+    await show_drama(bot, cb.message.chat.id, cb.from_user.id, lang_of(cb.from_user.id),
                      int(cb.data.split(":")[1]))
 
 
 # ───────────────────────────── Qismlarni boshqarish ─────────────────────────────
-@anime_router.callback_query(F.data.startswith("aep:list:"))
+@drama_router.callback_query(F.data.startswith("aep:list:"))
 async def ep_list(cb: CallbackQuery, state: FSMContext) -> None:
     await state.clear()
     _, _, aid, page = cb.data.split(":")
@@ -2946,7 +2946,7 @@ async def ep_list(cb: CallbackQuery, state: FSMContext) -> None:
     await cb.answer()
 
 
-@anime_router.callback_query(F.data.startswith("aep:one:"))
+@drama_router.callback_query(F.data.startswith("aep:one:"))
 async def ep_one(cb: CallbackQuery) -> None:
     _, _, aid, num = cb.data.split(":")
     await render(cb, f"📼 <b>{num}-qism</b>\n\nNima qilamiz?",
@@ -2954,7 +2954,7 @@ async def ep_one(cb: CallbackQuery) -> None:
     await cb.answer()
 
 
-@anime_router.callback_query(F.data.startswith("aep:view:"))
+@drama_router.callback_query(F.data.startswith("aep:view:"))
 async def ep_view(cb: CallbackQuery, bot: Bot) -> None:
     _, _, aid, num = cb.data.split(":")
     ep = await repo.get_episode(int(aid), int(num))
@@ -2971,16 +2971,16 @@ async def ep_view(cb: CallbackQuery, bot: Bot) -> None:
         await cb.message.answer(f"⚠️ Yuborib bo'lmadi: {esc(str(exc))}")
 
 
-@anime_router.callback_query(F.data.startswith("aep:rep:"))
+@drama_router.callback_query(F.data.startswith("aep:rep:"))
 async def ep_replace_start(cb: CallbackQuery, state: FSMContext) -> None:
     _, _, aid, num = cb.data.split(":")
     await state.set_state(ReplaceEp.file)
-    await state.update_data(anime_id=int(aid), number=int(num))
+    await state.update_data(drama_id=int(aid), number=int(num))
     await render(cb, f"🔄 <b>{num}-qism</b> uchun yangi videoni yuboring:", cancel_kb())
     await cb.answer()
 
 
-@anime_router.message(ReplaceEp.file, F.video | F.document)
+@drama_router.message(ReplaceEp.file, F.video | F.document)
 async def ep_replace_done(message: Message, state: FSMContext) -> None:
     if message.video:
         file_id, ftype = message.video.file_id, "video"
@@ -2991,12 +2991,12 @@ async def ep_replace_done(message: Message, state: FSMContext) -> None:
         return
     data = await state.get_data()
     await state.clear()
-    await repo.replace_episode(data["anime_id"], data["number"], file_id, ftype)
+    await repo.replace_episode(data["drama_id"], data["number"], file_id, ftype)
     await message.answer(f"✅ {data['number']}-qism almashtirildi.")
-    await show_card(message, data["anime_id"])
+    await show_card(message, data["drama_id"])
 
 
-@anime_router.callback_query(F.data.startswith("aep:del:"))
+@drama_router.callback_query(F.data.startswith("aep:del:"))
 async def ep_delete_ask(cb: CallbackQuery) -> None:
     if not is_owner(cb.from_user.id):
         await cb.answer("Qismni faqat Owner o'chira oladi", show_alert=True)
@@ -3006,7 +3006,7 @@ async def ep_delete_ask(cb: CallbackQuery) -> None:
     await cb.answer()
 
 
-@anime_router.callback_query(F.data.startswith("aep:delok:"))
+@drama_router.callback_query(F.data.startswith("aep:delok:"))
 async def ep_delete(cb: CallbackQuery) -> None:
     if not is_owner(cb.from_user.id):
         await cb.answer("Qismni faqat Owner o'chira oladi", show_alert=True)
@@ -3019,15 +3019,15 @@ async def ep_delete(cb: CallbackQuery) -> None:
 
 
 # ───────────────────────────── Tahrirlash ─────────────────────────────
-@anime_router.callback_query(F.data.startswith("aed:"))
+@drama_router.callback_query(F.data.startswith("aed:"))
 async def edit_menu(cb: CallbackQuery, state: FSMContext) -> None:
     await state.clear()
     aid = int(cb.data.split(":")[1])
-    anime = await repo.get_anime(aid)
-    if anime is None:
+    drama = await repo.get_drama(aid)
+    if drama is None:
         await cb.answer("Topilmadi", show_alert=True)
         return
-    await render(cb, f"✏️ <b>{esc(anime.title)}</b> — nimani o'zgartiramiz?", edit_menu_kb(aid, anime.is_vip))
+    await render(cb, f"✏️ <b>{esc(drama.title)}</b> — nimani o'zgartiramiz?", edit_menu_kb(aid, drama.is_vip))
     await cb.answer()
 
 
@@ -3039,22 +3039,22 @@ _EDIT_PROMPTS = {
 }
 
 
-@anime_router.callback_query(F.data.startswith("aef:"))
+@drama_router.callback_query(F.data.startswith("aef:"))
 async def edit_field(cb: CallbackQuery, state: FSMContext) -> None:
     _, aid, field = cb.data.split(":")
     if field not in _EDIT_PROMPTS:
         await cb.answer()
         return
-    await state.set_state(EditAnime.value)
-    await state.update_data(anime_id=int(aid), field=field)
+    await state.set_state(EditDrama.value)
+    await state.update_data(drama_id=int(aid), field=field)
     await render(cb, _EDIT_PROMPTS[field], cancel_kb())
     await cb.answer()
 
 
-@anime_router.message(EditAnime.value, F.text)
+@drama_router.message(EditDrama.value, F.text)
 async def edit_text(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
-    field, aid = data["field"], data["anime_id"]
+    field, aid = data["field"], data["drama_id"]
     value: str | int | None = message.text.strip()
     if field == "poster":
         await message.answer("⚠️ Iltimos, <b>rasm</b> yuboring.")
@@ -3069,86 +3069,86 @@ async def edit_text(message: Message, state: FSMContext) -> None:
             await message.answer("⚠️ Yilni to'g'ri yozing (1950–2100) yoki 0.")
             return
         value = int(value) or None
-    await repo.update_anime(aid, **{field: value})
+    await repo.update_drama(aid, **{field: value})
     await state.clear()
     await message.answer("✅ Saqlandi.")
     await show_card(message, aid)
 
 
-@anime_router.message(EditAnime.value, F.photo)
+@drama_router.message(EditDrama.value, F.photo)
 async def edit_photo(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     if data["field"] != "poster":
         await message.answer("⚠️ Bu yerda matn yuboring.")
         return
-    await repo.update_anime(data["anime_id"], poster=message.photo[-1].file_id)
+    await repo.update_drama(data["drama_id"], poster=message.photo[-1].file_id)
     await state.clear()
     await message.answer("✅ Rasm yangilandi.")
-    await show_card(message, data["anime_id"])
+    await show_card(message, data["drama_id"])
 
 
-@anime_router.callback_query(F.data.startswith("aeg:"))
+@drama_router.callback_query(F.data.startswith("aeg:"))
 async def edit_genres(cb: CallbackQuery) -> None:
     aid = int(cb.data.split(":")[1])
-    selected = await repo.anime_genre_ids(aid)
+    selected = await repo.drama_genre_ids(aid)
     genres = await repo.list_genres()
     await render(cb, "🎭 Janrlarni belgilang (yangi janr: Panel → 🎭 Janrlar):",
                  genre_toggle_kb(genres, selected, f"aegt:{aid}", f"aed:{aid}", None))
     await cb.answer()
 
 
-@anime_router.callback_query(F.data.startswith("aegt:"))
+@drama_router.callback_query(F.data.startswith("aegt:"))
 async def edit_genre_toggle(cb: CallbackQuery) -> None:
     _, aid, gid = cb.data.split(":")
-    selected = await repo.anime_genre_ids(int(aid))
+    selected = await repo.drama_genre_ids(int(aid))
     selected.symmetric_difference_update({int(gid)})
-    await repo.set_anime_genres(int(aid), list(selected))
+    await repo.set_drama_genres(int(aid), list(selected))
     genres = await repo.list_genres()
     await render(cb, "🎭 Janrlarni belgilang (yangi janr: Panel → 🎭 Janrlar):",
                  genre_toggle_kb(genres, selected, f"aegt:{aid}", f"aed:{aid}", None))
     await cb.answer()
 
 
-@anime_router.callback_query(F.data.startswith("aevip:"))
+@drama_router.callback_query(F.data.startswith("aevip:"))
 async def edit_vip(cb: CallbackQuery) -> None:
     aid = int(cb.data.split(":")[1])
-    anime = await repo.get_anime(aid)
-    if anime is None:
+    drama = await repo.get_drama(aid)
+    if drama is None:
         await cb.answer("Topilmadi", show_alert=True)
         return
-    await repo.update_anime(aid, is_vip=not anime.is_vip)
-    await render(cb, f"✏️ <b>{esc(anime.title)}</b> — nimani o'zgartiramiz?", edit_menu_kb(aid, not anime.is_vip))
+    await repo.update_drama(aid, is_vip=not drama.is_vip)
+    await render(cb, f"✏️ <b>{esc(drama.title)}</b> — nimani o'zgartiramiz?", edit_menu_kb(aid, not drama.is_vip))
     await cb.answer("💎 VIP holati o'zgartirildi")
 
 
-# ───────────────────────────── Animeni o'chirish (Owner) ─────────────────────────────
-@anime_router.callback_query(F.data.startswith("adel:"))
-async def anime_delete_ask(cb: CallbackQuery) -> None:
+# ───────────────────────────── Dramani o'chirish (Owner) ─────────────────────────────
+@drama_router.callback_query(F.data.startswith("adel:"))
+async def drama_delete_ask(cb: CallbackQuery) -> None:
     if not is_owner(cb.from_user.id):
-        await cb.answer("Animeni faqat Owner o'chira oladi", show_alert=True)
+        await cb.answer("Dramani faqat Owner o'chira oladi", show_alert=True)
         return
     aid = int(cb.data.split(":")[1])
-    anime = await repo.get_anime(aid)
-    if anime is None:
+    drama = await repo.get_drama(aid)
+    if drama is None:
         await cb.answer("Topilmadi", show_alert=True)
         return
-    await render(cb, f"🗑 <b>{esc(anime.title)}</b> va uning <b>barcha qismlari</b> butunlay o'chiriladi.\n\nRostdan ham?",
+    await render(cb, f"🗑 <b>{esc(drama.title)}</b> va uning <b>barcha qismlari</b> butunlay o'chiriladi.\n\nRostdan ham?",
                  yes_no(f"adelok:{aid}", f"aa:{aid}"))
     await cb.answer()
 
 
-@anime_router.callback_query(F.data.startswith("adelok:"))
-async def anime_delete(cb: CallbackQuery) -> None:
+@drama_router.callback_query(F.data.startswith("adelok:"))
+async def drama_delete(cb: CallbackQuery) -> None:
     if not is_owner(cb.from_user.id):
-        await cb.answer("Animeni faqat Owner o'chira oladi", show_alert=True)
+        await cb.answer("Dramani faqat Owner o'chira oladi", show_alert=True)
         return
-    await repo.delete_anime(int(cb.data.split(":")[1]))
-    await render(cb, "🗑 Anime butunlay o'chirildi.", markup([[B("⬅️ Ro'yxat", "adm:anime:0")]]))
+    await repo.delete_drama(int(cb.data.split(":")[1]))
+    await render(cb, "🗑 Drama butunlay o'chirildi.", markup([[B("⬅️ Ro'yxat", "adm:drama:0")]]))
     await cb.answer()
 
 
 # ───────────────────────────── Post qilish ─────────────────────────────
-@anime_router.callback_query(F.data.startswith("apost:"))
+@drama_router.callback_query(F.data.startswith("apost:"))
 async def post_choose_channel(cb: CallbackQuery) -> None:
     aid = int(cb.data.split(":")[1])
     channels = await repo.list_channels("post")
@@ -3163,7 +3163,7 @@ async def post_choose_channel(cb: CallbackQuery) -> None:
     await cb.answer()
 
 
-@anime_router.callback_query(F.data.startswith("apch:"))
+@drama_router.callback_query(F.data.startswith("apch:"))
 async def post_choose_when(cb: CallbackQuery) -> None:
     _, aid, chid = cb.data.split(":")
     kb = markup([
@@ -3175,25 +3175,25 @@ async def post_choose_when(cb: CallbackQuery) -> None:
     await cb.answer()
 
 
-@anime_router.callback_query(F.data.startswith("apnow:"))
+@drama_router.callback_query(F.data.startswith("apnow:"))
 async def post_now(cb: CallbackQuery, bot: Bot) -> None:
     _, aid, chid = cb.data.split(":")
-    anime, channel = await repo.get_anime(int(aid)), await repo.get_channel(int(chid))
-    if anime is None or channel is None:
-        await cb.answer("Anime yoki kanal topilmadi", show_alert=True)
+    drama, channel = await repo.get_drama(int(aid)), await repo.get_channel(int(chid))
+    if drama is None or channel is None:
+        await cb.answer("Drama yoki kanal topilmadi", show_alert=True)
         return
-    err = await send_post(bot, anime, channel.chat_id, cb.from_user.full_name)
+    err = await send_post(bot, drama, channel.chat_id, cb.from_user.full_name)
     text = f"✅ Post <b>{esc(channel.title)}</b> kanaliga yuborildi!" if err is None else \
         f"❌ Yuborib bo'lmadi: {esc(short(err, 200))}\n\nBot kanalda admin ekanini tekshiring."
-    await render(cb, text, markup([[B("⬅️ Anime", f"aa:{aid}")]]))
+    await render(cb, text, markup([[B("⬅️ Drama", f"aa:{aid}")]]))
     await cb.answer()
 
 
-@anime_router.callback_query(F.data.startswith("apsch:"))
+@drama_router.callback_query(F.data.startswith("apsch:"))
 async def post_schedule_start(cb: CallbackQuery, state: FSMContext) -> None:
     _, aid, chid = cb.data.split(":")
     await state.set_state(PostSchedule.when)
-    await state.update_data(anime_id=int(aid), channel_id=int(chid))
+    await state.update_data(drama_id=int(aid), channel_id=int(chid))
     await render(
         cb,
         "🕒 Yuborish <b>sana va vaqtini</b> yozing (Toshkent vaqti):\n\n"
@@ -3203,7 +3203,7 @@ async def post_schedule_start(cb: CallbackQuery, state: FSMContext) -> None:
     await cb.answer()
 
 
-@anime_router.message(PostSchedule.when, F.text)
+@drama_router.message(PostSchedule.when, F.text)
 async def post_schedule_done(message: Message, state: FSMContext) -> None:
     run_at = parse_local_datetime(message.text)
     if run_at is None:
@@ -3218,10 +3218,10 @@ async def post_schedule_done(message: Message, state: FSMContext) -> None:
     if channel is None:
         await message.answer("❌ Kanal topilmadi.")
         return
-    await repo.add_scheduled(data["anime_id"], channel.chat_id, channel.title, run_at, message.from_user.id)
+    await repo.add_scheduled(data["drama_id"], channel.chat_id, channel.title, run_at, message.from_user.id)
     await message.answer(
         f"✅ Post rejalashtirildi!\n\n📡 {esc(channel.title)}\n🕒 {fmt_dt(run_at)}",
-        reply_markup=markup([[B("⬅️ Anime", f"aa:{data['anime_id']}")]]),
+        reply_markup=markup([[B("⬅️ Drama", f"aa:{data['drama_id']}")]]),
     )
 
 
@@ -3245,7 +3245,7 @@ async def _channels_view(kind: str):
     ) or "Hozircha yo'q."
     hint = (
         "Foydalanuvchilar shu kanallarga obuna bo'lmaguncha botdan foydalana olmaydi."
-        if kind == "sub" else "Animelar shu kanal/guruhlarga post qilinadi."
+        if kind == "sub" else "Dramalar shu kanal/guruhlarga post qilinadi."
     )
     return f"<b>{KIND_TITLES[kind]}</b>\n\n{lines}\n\n<i>{hint}</i>", channels_kb(kind, channels)
 
@@ -3351,7 +3351,7 @@ async def _admins_view():
     rows = [[B(f"🗑 {i}", f"admdel:{i}", style="danger")] for i in ids if i not in env_ids]
     rows.append([B("➕ Admin qo'shish", "admadd", style="success")])
     rows.append(back_panel())
-    return ("👮 <b>Adminlar</b>\n\n" + lines + "\n\n<i>Admin: anime va qism qo'shadi/tahrirlaydi, post qiladi. "
+    return ("👮 <b>Adminlar</b>\n\n" + lines + "\n\n<i>Admin: drama va qism qo'shadi/tahrirlaydi, post qiladi. "
             "O'chirish va sozlamalar — faqat Owner.</i>"), markup(rows)
 
 
@@ -3451,7 +3451,7 @@ async def tpl_saved(message: Message, state: FSMContext, bot: Bot) -> None:
     # Owner <b>...</b> deb yozsa — oddiy matn; Telegram'da qalin qilib belgilasa — entity (html_text)
     template = (message.html_text if message.entities else message.text).strip()
     try:  # 1) {maydon} sintaksisi, 2) HTML to'g'riligini preview yuborib tekshiramiz
-        caption = render_caption(sample_anime(), None, None, template)
+        caption = render_caption(sample_drama(), None, None, template)
         await bot.send_message(message.chat.id, "👁 <b>Namuna:</b>\n\n" + caption)
     except (ValueError, KeyError, IndexError, TelegramAPIError) as exc:
         await message.answer(f"❌ Shablonda xato: <i>{esc(short(str(exc), 150))}</i>\nQayta yuboring:")
@@ -3465,9 +3465,9 @@ async def tpl_saved(message: Message, state: FSMContext, bot: Bot) -> None:
 
 @channels_router.callback_query(F.data == "tplprev")
 async def cb_tpl_preview(cb: CallbackQuery, bot: Bot) -> None:
-    anime = sample_anime()
-    await bot.send_message(cb.message.chat.id, render_caption(anime, cb.from_user.full_name),
-                           reply_markup=post_kb(anime.id))
+    drama = sample_drama()
+    await bot.send_message(cb.message.chat.id, render_caption(drama, cb.from_user.full_name),
+                           reply_markup=post_kb(drama.id))
     await cb.answer()
 
 
@@ -3490,7 +3490,7 @@ async def cb_tpl_show(cb: CallbackQuery) -> None:
 @channels_router.callback_query(F.data == "tpligram")
 async def cb_instagram(cb: CallbackQuery, state: FSMContext) -> None:
     await state.set_state(SetInstagram.url)
-    await render(cb, "📸 Instagram havolasini yuboring (masalan: <code>https://instagram.com/anizone</code>):",
+    await render(cb, "📸 Instagram havolasini yuboring (masalan: <code>https://instagram.com/username</code>):",
                  cancel_kb())
     await cb.answer()
 
@@ -3586,8 +3586,8 @@ async def _sched_view():
         return "🕒 Rejalashtirilgan postlar yo'q.", markup([back_panel()])
     rows, lines = [], []
     for it in items:
-        anime = await repo.get_anime(it.anime_id)
-        name = anime.title if anime else f"#{it.anime_id}"
+        drama = await repo.get_drama(it.drama_id)
+        name = drama.title if drama else f"#{it.drama_id}"
         lines.append(f"• {fmt_dt(it.run_at)} — <b>{esc(short(name, 30))}</b> → {esc(it.channel_title)}")
         rows.append([B(f"🗑 {fmt_dt(it.run_at)} · {short(name, 20)}", f"schdel:{it.id}", style="danger")])
     rows.append(back_panel())
@@ -3624,7 +3624,7 @@ _tasks: set[asyncio.Task] = set()  # fon vazifalarini xotirada ushlab turish uch
 @owners_router.callback_query(F.data == "adm:stats")
 async def cb_stats(cb: CallbackQuery) -> None:
     s = await repo.stats(day_start_utc())
-    top = await repo.top_anime(5)
+    top = await repo.top_drama(5)
     top_lines = "\n".join(f"{i}. {esc(short(a.title, 30))} — 👁 {a.views}" for i, a in enumerate(top, 1)) or "—"
     text = (
         "📊 <b>Statistika</b>\n\n"
@@ -3632,7 +3632,7 @@ async def cb_stats(cb: CallbackQuery) -> None:
         f"🆕 Bugun: <b>{s['today']}</b>  |  7 kun: <b>{s['week']}</b>\n"
         f"💎 VIP: <b>{s['vip']}</b>\n"
         f"🚫 Ban: <b>{s['banned']}</b>  |  Botni bloklagan: <b>{s['blocked']}</b>\n\n"
-        f"🎬 Animelar: <b>{s['anime']}</b>\n"
+        f"🎬 Dramalar: <b>{s['drama']}</b>\n"
         f"📼 Qismlar: <b>{s['episodes']}</b>\n"
         f"👁 Qism ko'rishlar: <b>{s['views']}</b>\n\n"
         f"🏆 <b>Eng ko'p ko'rilgan:</b>\n{top_lines}"
@@ -3917,7 +3917,7 @@ def get_routers() -> list[Router]:
         vip_router,
         user_router,
         panel_router,
-        anime_router,
+        drama_router,
         channels_router,
         owners_router,
         fallback_router,  # doim eng oxirida (oddiy matn = qidiruv)
@@ -3955,7 +3955,7 @@ async def load_cache(bot: Bot, cfg: Config) -> None:
 
 
 async def _seed_default_channel(bot: Bot, cfg: Config) -> None:
-    """DEFAULT_SUB_CHANNEL (masalan @anizone) ni birinchi marta majburiy obunaga qo'shadi."""
+    """DEFAULT_SUB_CHANNEL (masalan @kanal) ni birinchi marta majburiy obunaga qo'shadi."""
     if not cfg.default_sub_channel or setting("default_channel_seeded") == "1":
         return
     ref: int | str = cfg.default_sub_channel
